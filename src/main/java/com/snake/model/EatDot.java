@@ -5,18 +5,14 @@ import java.util.Objects;
 
 public class EatDot {
     private final Point points;
-    private int weight;
 
 
-    public EatDot(Point points, int weight) {
+    public EatDot(Point points) {
         this.points = points;
-        this.weight = weight;
     }
 
 
-    public int getWeight() {
-        return weight;
-    }
+
 
     public Point getPoints() {
         return points;

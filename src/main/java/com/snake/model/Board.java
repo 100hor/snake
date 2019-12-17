@@ -36,10 +36,10 @@ public class Board {
             if (!snake.isMoveValid(moveEvent))
                 continue;
             if (snake.isDotEaten(dotOnBoard)) {
-                snake = snake.moveByEatDot(moveEvent);
+                snake = snake.move(moveEvent,snake.isDotEaten(dotOnBoard));
                 dotOnBoard = dotBuilder.next(width, height);
             } else {
-                snake = snake.move(moveEvent);
+                snake = snake.move(moveEvent,snake.isDotEaten(dotOnBoard));
             }
             if (snake.isGameOver(width, height))
                 break;
@@ -48,7 +48,7 @@ public class Board {
     }
 
     public String getStringState() {
-        final char[][] charBoard = new char[height][width];
+        final char[][] charBoard = new char[height + 1][width + 1];
         snake.getSnakePoints().forEach(point -> charBoard[point.getY()][point.getX()] = '*');
         charBoard[dotOnBoard.getPoints().getY()][dotOnBoard.getPoints().getX()] = '#';
         StringBuilder builder = new StringBuilder();

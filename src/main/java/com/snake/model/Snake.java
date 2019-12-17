@@ -26,7 +26,7 @@ public class Snake {
         return direction;
     }
 
-    private Direction setDirection(MoveEvent moveEvent) {
+    private Direction newDirection(MoveEvent moveEvent) {
         switch (direction) {
             case UP:
             case DOWN:
@@ -49,33 +49,38 @@ public class Snake {
         return direction;
     }
 
-    public Snake move(MoveEvent moveEvent) {
+    public Snake move(MoveEvent moveEvent, boolean isDotEaten) {
         List<Point> newSnake = new ArrayList<>();
+        final Point head = snakePoints.get(0);
+        int newSnakeSize = snakePoints.size();
+        if (isDotEaten){
+            newSnakeSize++;
+        }
         switch (moveEvent.getType()) {
             case MOVE_RIGTH: {
-                newSnake.add(0, new Point(snakePoints.get(0).getX() + 1, snakePoints.get(0).getY()));
-                for (int i = 1; i < snakePoints.size(); i++) {
+                newSnake.add(0, new Point(head.getX() + 1, head.getY()));
+                for (int i = 1; i < newSnakeSize; i++) {
                     newSnake.add(i, snakePoints.get(i - 1));
                 }
             }
             break;
             case MOVE_UP: {
-                newSnake.add(0, new Point(snakePoints.get(0).getX(), snakePoints.get(0).getY() - 1));
-                for (int i = 1; i < snakePoints.size(); i++) {
+                newSnake.add(0, new Point(head.getX(), head.getY() - 1));
+                for (int i = 1; i < newSnakeSize; i++) {
                     newSnake.add(i, snakePoints.get(i - 1));
                 }
             }
             break;
             case MOVE_DOWN: {
-                newSnake.add(0, new Point(snakePoints.get(0).getX(), snakePoints.get(0).getY() + 1));
-                for (int i = 1; i < snakePoints.size(); i++) {
+                newSnake.add(0, new Point(head.getX(), head.getY() + 1));
+                for (int i = 1; i < newSnakeSize; i++) {
                     newSnake.add(i, snakePoints.get(i - 1));
                 }
             }
             break;
             case MOVE_LEFT: {
-                newSnake.add(0, new Point(snakePoints.get(0).getX() - 1, snakePoints.get(0).getY()));
-                for (int i = 1; i < snakePoints.size(); i++) {
+                newSnake.add(0, new Point(head.getX() - 1, head.getY()));
+                for (int i = 1; i < newSnakeSize; i++) {
                     newSnake.add(i, snakePoints.get(i - 1));
                 }
             }
@@ -85,56 +90,16 @@ public class Snake {
                 throw new IllegalArgumentException("Invalid move state");
 
         }
-        return new Snake(newSnake, setDirection(moveEvent));
+        return new Snake(newSnake, newDirection(moveEvent));
     }
 
     public boolean isDotEaten(EatDot dot) {
-        if (snakePoints.get(0).equals(dot.getPoints()))
-            return true;
-        else return false;
+        return snakePoints.get(0).equals(dot.getPoints());
     }
 
-    public Snake moveByEatDot(MoveEvent moveEvent) {
-        List<Point> newSnake = new ArrayList<>();
-        switch (moveEvent.getType()) {
-            case MOVE_RIGTH: {
-                newSnake.add(0, new Point(snakePoints.get(0).getX() + 1, snakePoints.get(0).getY()));
-                for (int i = 1; i < snakePoints.size() + 1; i++) {
-                    newSnake.add(i, snakePoints.get(i - 1));
-                }
-            }
-            break;
-            case MOVE_UP: {
-                newSnake.add(0, new Point(snakePoints.get(0).getX(), snakePoints.get(0).getY() - 1));
-                for (int i = 1; i < snakePoints.size() + 1; i++) {
-                    newSnake.add(i, snakePoints.get(i-1));
-                }
-            }
-            break;
-            case MOVE_DOWN: {
-                newSnake.add(0, new Point(snakePoints.get(0).getX(), snakePoints.get(0).getY() + 1));
-                for (int i = 1; i < snakePoints.size() + 1; i++) {
-                    newSnake.add(i, snakePoints.get(i - 1));
-                }
-            }
-            break;
-            case MOVE_LEFT: {
-                newSnake.add(0, new Point(snakePoints.get(0).getX() - 1, snakePoints.get(0).getY()));
-                for (int i = 1; i < snakePoints.size() + 1; i++) {
-                    newSnake.add(i, snakePoints.get(i - 1));
-                }
-            }
-            break;
 
-            default:
-                throw new IllegalArgumentException("Invalid move state");
-
-        }
-        return new Snake(newSnake, setDirection(moveEvent));
-    }
 
     public boolean isMoveValid(MoveEvent moveEvent) {
-        boolean isValid = false;
         switch (moveEvent.getType()) {
             case MOVE_UP:
                 if (direction != Direction.DOWN)
@@ -157,14 +122,15 @@ public class Snake {
                 throw new IllegalArgumentException("Invalid move state");
 
         }
-        return isValid;
+        return false;
     }
 
     public boolean isGameOver(int width, int height) {
-        for (int i = 1; i < snakePoints.size() - 1; i++) {
-            if (snakePoints.get(0).equals(snakePoints.get(i)))
+        for (int i = 1; i < snakePoints.size(); i++) {
+            final Point head = snakePoints.get(0);
+            if (head.equals(snakePoints.get(i)))
                 return true;
-            if (snakePoints.get(0).getX() < 0 || snakePoints.get(0).getX() > width || snakePoints.get(0).getY() > height) {
+            if (head.getX() < 0 || head.getY() < 0 || head.getX() > width || head.getY() > height) {
                 return true;
             }
 
